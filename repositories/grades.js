@@ -4,43 +4,61 @@ import clone from '../helpers/clone.js';
 const create = async (grade) => {
     const model = new gradeModel(grade);
     const created = await gradeModel.create(model);
-    created.id = created._id;
-    return created;
+    const createdClone = clone(created);
+    createdClone.id = created._id;
+    return createdClone;
 }
 
 const find = async (grade, limit) => {
     const gradeClone = clone(grade);
-    if (gradeClone.id) gradeClone._id = gradeClone.id;
-    //condicao para o filtro no findAll
+    if (gradeClone.id) {
+        gradeClone._id = gradeClone.id;
+        delete gradeClone.id;
+    }
     if (gradeClone.name) gradeClone.name = { $regex: new RegExp(gradeClone.name), $options: 'i' };
     const found = limit ?
         await gradeModel.find(gradeClone).limit(limit)
         : await gradeModel.find(gradeClone);
     return found.map(g => {
-        g.id = g._id;
-        return g;
+        const gClone = clone(g);
+        gClone.id = g._id;
+        delete gClone._id;
+        return gClone;
     });
 }
 
 const findOne = async (grade) => {
     const gradeClone = clone(grade);
-    if (gradeClone.id) gradeClone._id = gradeClone.id;
+    if (gradeClone.id) {
+        gradeClone._id = gradeClone.id;
+        delete gradeClone.id;
+    }
     const found = await gradeModel.findOne(gradeClone);
-    found.id = found._id;
-    return found;
+    const foundClone = clone(found);
+    foundClone.id = found._id;
+    return foundClone;
 }
 
 const update = async (grade) => {
-    const model = new gradeModel(grade);
-    if (model.id) model._id = model.id;
-    const updated = gradeModel.findByIdAndUpdate(model._id, model, { new: true, useFindAndModify: false });
+    const gradeClone = clone(grade);
+    if (gradeClone.id) {
+        gradeClone._id = gradeClone.id;
+        delete gradeClone.id;
+    }
+    const model = new gradeModel(gradeClone);
+    const updated = await gradeModel.findByIdAndUpdate(model._id, model, { new: true, useFindAndModify: false });
     updated.id = updated._id;
+    delete updated._id;
+    return updated;
 }
 
 const remove = async (grade) => {
     const gradeClone = clone(grade);
-    if (gradeClone.id) gradeClone._id = gradeClone.id;
-    await gradeModel.findByIdAndDelete(gradeClone._id);
+    if (gradeClone.id) {
+        gradeClone._id = gradeClone.id;
+        delete gradeClone.id;
+    }
+    await gradeModel.deleteOne(gradeClone);
 }
 
 const removeAll = async () => {
