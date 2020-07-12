@@ -3,7 +3,7 @@ import clone from '../helpers/clone.js';
 
 const create = async (grade) => {
     const model = new gradeModel(grade);
-    const created = await gradeModel.insert(model);
+    const created = await gradeModel.save(model);
     created.id = created._id;
     return created;
 }
