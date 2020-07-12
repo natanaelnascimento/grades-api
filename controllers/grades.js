@@ -4,7 +4,7 @@ import gradesService from '../services/grades.js';
 const create = async (req, res) => {
   try {
     const grade = { ...req.body, ...req.params, ...req.query };
-    created = await gradesService.create(grade);
+    const created = await gradesService.create(grade);
     res.send(created);
     logger.info(`POST /grades - ${JSON.stringify()}`);
   } catch (error) {

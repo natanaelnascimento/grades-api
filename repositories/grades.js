@@ -3,10 +3,12 @@ import clone from '../helpers/clone.js';
 
 const create = async (grade) => {
     const model = new gradeModel(grade);
-    const created = await gradeModel.create(model);
-    const createdClone = clone(created);
-    createdClone.id = created._id;
-    return createdClone;
+    await gradeModel.create(model);
+    const modelClone = clone(model);
+    modelClone.id = modelClone._id;
+    delete modelClone._id;
+    delete modelClone.__v;
+    return modelClone;
 }
 
 const find = async (grade, limit) => {
@@ -23,6 +25,7 @@ const find = async (grade, limit) => {
         const gClone = clone(g);
         gClone.id = g._id;
         delete gClone._id;
+        if (gClone.__v) delete gClone.__v;
         return gClone;
     });
 }
@@ -36,6 +39,8 @@ const findOne = async (grade) => {
     const found = await gradeModel.findOne(gradeClone);
     const foundClone = clone(found);
     foundClone.id = found._id;
+    delete foundClone._id;
+    if (foundClone.__v) delete foundClone.__v;
     return foundClone;
 }
 
@@ -49,6 +54,7 @@ const update = async (grade) => {
     const updated = await gradeModel.findByIdAndUpdate(model._id, model, { new: true, useFindAndModify: false });
     updated.id = updated._id;
     delete updated._id;
+    if (updated.__v) delete updated.__v;
     return updated;
 }
 
